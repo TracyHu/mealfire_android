@@ -71,7 +71,7 @@ public class Utils {
 				if (hours == 1) {
 					return "1 hour ago";
 				} else {
-					return String.format("%d hours aog", hours);
+					return String.format("%d hours ago", hours);
 				}
 			} else if (date.isAfter(new DateTime().withDayOfYear(1))) {
 				return date.toString("MMMM d");
