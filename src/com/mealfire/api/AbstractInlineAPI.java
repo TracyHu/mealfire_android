@@ -1,5 +1,6 @@
 package com.mealfire.api;
 
+import java.io.IOException;
 import java.util.Hashtable;
 
 import org.json.JSONArray;
@@ -23,5 +24,5 @@ public abstract class AbstractInlineAPI {
 		shouldSetToken = false;
 	}
 	
-	public abstract JSONArray run() throws JSONException, UserException;
+	public abstract JSONArray run() throws JSONException, UserException, IOException;
 }

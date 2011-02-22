@@ -1,5 +1,7 @@
 package com.mealfire.api;
 
+import java.io.IOException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -71,16 +73,6 @@ public class API<T> {
 	private void checkedThreadedGet() {
 		try {
 			threadedGet();
-		} catch (final JSONException e) {
-			cancelToast();
-			
-			if (activity != null) {
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						activity.handleAPIException(API.this, e);
-					}
-				});
-			}
 		} catch (final UserException e) {
 			cancelToast();
 			
@@ -91,10 +83,20 @@ public class API<T> {
 					}
 				});
 			}
+		} catch (final Exception e) {
+			cancelToast();
+			
+			if (activity != null) {
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						activity.handleAPIException(API.this, e);
+					}
+				});
+			}
 		}
 	}
 	
-	private void threadedGet() throws JSONException, UserException {
+	private void threadedGet() throws JSONException, UserException, IOException {
 		JSONArray array = inlineAPI.run();
 		
 		if (array != null) {

@@ -27,7 +27,7 @@ public class InlineAPI extends AbstractInlineAPI {
 		this.data = data;
 	}
 	
-	public JSONArray run() {
+	public JSONArray run() throws JSONException, IOException {
 		if (shouldSetToken) {
 			setParameter("token", User.getToken());
 		}
@@ -53,26 +53,14 @@ public class InlineAPI extends AbstractInlineAPI {
 			
 			i++;
 		}
-		
-		try {
-			response = client.execute(new HttpGet(
-				String.format("http://mealfire.com/api/v2/%s.js?%s", action, query.toString())));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	
+		response = client.execute(new HttpGet(
+			String.format("http://mealfire.com/api/v2/%s.js?%s", action, query.toString())));
 						
-		try {
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(response.getEntity().getContent(), writer);
-			json = writer.toString();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		
-		try {
-			return new JSONArray(json);
-		} catch (JSONException e) {
-			throw new RuntimeException(e);
-		}
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(response.getEntity().getContent(), writer);
+		json = writer.toString();
+
+		return new JSONArray(json);
 	}
 }

@@ -1,5 +1,6 @@
 package com.mealfire.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
@@ -38,7 +39,7 @@ public class IngredientList {
 	public static API<IngredientList> getLatestList() {
 		return new API<IngredientList>(new AbstractInlineAPI() {
 			@Override
-			public JSONArray run() throws JSONException, UserException {
+			public JSONArray run() throws JSONException, UserException, IOException {
 				InlineAPI listID = new InlineAPI("me/lists");
 				listID.setParameter("sort", "created_at");
 				listID.setParameter("order", "desc");
@@ -47,7 +48,7 @@ public class IngredientList {
 				IngredientList list = new FirstIngredientListTransformer()
 					.transform(listID.run());
 				
-				if (list == null) {
+				if (list == null ) {
 					throw new UserException("You have not created any shopping lists yet.", true);
 				}
 								
