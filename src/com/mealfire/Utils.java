@@ -45,7 +45,7 @@ public class Utils {
 		Duration duration = interval.toDuration();
 		
 		if (duration.isShorterThan(Duration.standardSeconds(10))) {
-			return "Just now";
+			return "just now";
 		} else if (duration.isShorterThan(Duration.standardMinutes(1))) {
 			int seconds = Seconds.secondsIn(interval).getSeconds();
 			return String.format("%d seconds ago", seconds);
@@ -64,7 +64,7 @@ public class Utils {
 			DateTime twoDaysAgo = new DateTime().minusDays(2).withHourOfDay(1);
 			
 			if (hours > 6 && date.isAfter(yesterday) && date.isBefore(today)) {
-				return "Yesterday";
+				return "yesterday";
 			} else if (date.isAfter(twoDaysAgo) && date.isBefore(yesterday)) {
 				return "2 days ago";
 			} else if (hours < 24) {
