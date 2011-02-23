@@ -45,7 +45,7 @@ public class ImageLoader {
         else
         {
             queuePhoto(url, activity, imageView);
-            imageView.setImageResource(R.drawable.no_image);
+            imageView.setImageResource(R.drawable.placeholder);
         }    
     }
         
