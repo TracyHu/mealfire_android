@@ -3,7 +3,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="#CCCCCC">
-	<TextView android:id="@+id/ingredient_group_text_view"
+	<TextView android:id="@+id/header_text"
 			android:textStyle="bold"
   			android:paddingLeft="6dip"
   			android:paddingTop="2dip"

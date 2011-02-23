@@ -3,7 +3,7 @@
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content"
   		android:orientation="vertical">
-  	<CheckedTextView android:id="@+id/ingredient_text_view"
+  	<CheckedTextView android:id="@+id/text"
   			android:checkMark="?android:attr/listChoiceIndicatorMultiple"
   			android:gravity="center_vertical"
   			android:layout_weight="1"

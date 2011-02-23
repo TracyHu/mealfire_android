@@ -67,13 +67,13 @@ public class ViewRecipe extends MealfireActivity {
 		// Show the ingredients.
 		for (IngredientRow row : rows) {
 			if (row.getType() == IngredientRow.TYPE_INGREDIENT) {
-				View view = getLayoutInflater().inflate(R.layout.ingredient, null);
-				TextView textView = (TextView) view.findViewById(R.id.ingredient_text_view);
+				View view = getLayoutInflater().inflate(R.layout.row, null);
+				TextView textView = (TextView) view.findViewById(R.id.text);
 				textView.setText(row.toString());
 				ingredients.addView(view);
 			} else {
-				View view = getLayoutInflater().inflate(R.layout.ingredient_group, null);
-				TextView textView = (TextView) view.findViewById(R.id.ingredient_group_text_view);
+				View view = getLayoutInflater().inflate(R.layout.row_header, null);
+				TextView textView = (TextView) view.findViewById(R.id.header_text);
 				textView.setText(row.toString());
 				ingredients.addView(view);
 			}

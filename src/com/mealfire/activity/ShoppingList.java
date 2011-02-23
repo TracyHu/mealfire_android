@@ -151,18 +151,18 @@ public class ShoppingList extends MealfireActivity {
 			IngredientRow row = rows.get(position);
 			
 			if (row.getType() == IngredientRow.TYPE_GROUP) {
-				if (convertView == null || convertView.findViewById(R.id.ingredient_group_text_view) == null) {
-					convertView = getLayoutInflater().inflate(R.layout.ingredient_group, null);
+				if (convertView == null || convertView.findViewById(R.id.header_text) == null) {
+					convertView = getLayoutInflater().inflate(R.layout.row_header, null);
 				}
 				
-				TextView textView = (TextView) convertView.findViewById(R.id.ingredient_group_text_view);
+				TextView textView = (TextView) convertView.findViewById(R.id.header_text);
 				textView.setText(row.toString());
 			} else {
-				if (convertView == null || convertView.findViewById(R.id.ingredient_text_view) == null) {
-					convertView = getLayoutInflater().inflate(R.layout.ingredient_with_checkmark, null);
+				if (convertView == null || convertView.findViewById(R.id.text) == null) {
+					convertView = getLayoutInflater().inflate(R.layout.row_with_checkmark, null);
 				}
 				
-				CheckedTextView textView = (CheckedTextView) convertView.findViewById(R.id.ingredient_text_view);
+				CheckedTextView textView = (CheckedTextView) convertView.findViewById(R.id.text);
 				textView.setText(row.toString());
 				textView.setChecked(row.checked);
 			}
