@@ -15,5 +15,6 @@
         <activity android:name=".activity.ViewRecipe"/>
         <activity android:name=".activity.Login"/>
         <activity android:name=".activity.ShoppingList"/>
+        <activity android:name=".activity.Calendar"/>
     </application>
 </manifest> 

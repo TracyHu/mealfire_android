@@ -35,7 +35,7 @@ public class ShoppingList extends MealfireActivity {
 		setContentView(R.layout.list);
 		setTitle("Shopping List");
 		adapter = new ShoppingListAdapter();
-		ListView listView = (ListView) findViewById(R.id.list_list_view);
+		ListView listView = (ListView) findViewById(R.id.list_view);
 		listView.setAdapter(adapter);
 		listView.setDivider(null);
 		

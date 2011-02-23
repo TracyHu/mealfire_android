@@ -68,6 +68,19 @@ public class Home extends MealfireActivity {
 		
 		rows.add(shoppingListRow);
 		
+		HomeRow calendarRow = new HomeRow();
+		
+		calendarRow.title = "Calendar";
+		calendarRow.image = R.drawable.calendar;
+		calendarRow.onClick = new Runnable() {
+			public void run() {
+				Intent intent = new Intent(Home.this, Calendar.class);
+				Home.this.startActivity(intent);
+			}
+		};
+		
+		rows.add(calendarRow);
+		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				rows.get(position).onClick.run();
