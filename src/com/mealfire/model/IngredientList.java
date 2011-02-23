@@ -2,7 +2,10 @@ package com.mealfire.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -15,6 +18,7 @@ import com.mealfire.api.API;
 import com.mealfire.api.AbstractInlineAPI;
 import com.mealfire.api.DataTransformer;
 import com.mealfire.api.InlineAPI;
+import com.mealfire.api.StringTransformer;
 
 public class IngredientList {
 	private int id;
@@ -60,6 +64,39 @@ public class IngredientList {
 	public static API<IngredientList> getList(int id) {
 		return new API<IngredientList>("me/lists/" + Integer.toString(id),
 			new IngredientListTransformer());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public API<String> hideIngredients(ArrayList<Ingredient> ingredients) {
+		// Build our JSONArray.
+		JSONArray array = new JSONArray();
+		
+		for (Ingredient i : ingredients) {
+			array.put(i.getFood());
+		}
+		
+		// Get rid of them on our end.
+		for (IngredientGroup group : ingredientGroups) {
+			for (Ingredient i : ingredients) {
+				group.getIngredients().remove(i);
+			}
+		}
+		
+		// And the now-empty groups.
+		Collection<IngredientGroup> newIG = CollectionUtils.select(ingredientGroups, new Predicate() {
+			public boolean evaluate(Object obj) {
+				return ((IngredientGroup) obj).getIngredients().size() > 0;
+			}
+		});
+		
+		ingredientGroups = new ArrayList<IngredientGroup>(newIG);
+		
+		API<String> api = new API<String>(
+			String.format("me/lists/%d/hide_foods", this.id),
+			new StringTransformer());
+		
+		api.setParameter("foods", array.toString());
+		return api;
 	}
 	
 	public ArrayList<IngredientGroup> getIngredientGroups() { return ingredientGroups; }

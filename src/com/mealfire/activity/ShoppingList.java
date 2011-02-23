@@ -5,11 +5,17 @@ import java.util.ArrayList;
 import org.json.JSONException;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.mealfire.R;
 import com.mealfire.api.API;
@@ -20,6 +26,7 @@ import com.mealfire.model.IngredientList;
 
 public class ShoppingList extends MealfireActivity {
 	private ArrayList<IngredientRow> rows = new ArrayList<IngredientRow>();
+	private IngredientList ingredientList;
 	private BaseAdapter adapter;
 	
 	@Override
@@ -32,30 +39,25 @@ public class ShoppingList extends MealfireActivity {
 		listView.setAdapter(adapter);
 		listView.setDivider(null);
 		
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				IngredientRow row = rows.get(position);
+				row.checked = !row.checked;
+				adapter.notifyDataSetChanged();
+			}
+		});
+		
 		DataRunnable<IngredientList> listHandler = new DataRunnable<IngredientList>() {
 			public void run(IngredientList list) throws JSONException {
-				for (int i = 0; i < list.getIngredientGroups().size(); i++) {
-					IngredientGroup ig = list.getIngredientGroups().get(i);
-					
-					rows.add(new IngredientRow(ig.getName(), "GROUP"));
-					
-					for (Ingredient ingredient : ig.getIngredients()) {
-						rows.add(new IngredientRow(ingredient.toString(), "INGREDIENT"));
-					}
-				}
-				
-				runOnUiThread(new Runnable() {
-					public void run() {
-						adapter.notifyDataSetChanged();
-					}
-				});
+				ingredientList = list;
+				reloadData();
 			}
 		};
 		
 		API<IngredientList> api;
 		
 		if (getIntent().hasExtra("listID")) {
-			// We were given an id, so no need to make two requests.
+			// We have an id, so no need to make two requests.
 			api = IngredientList.getList(getIntent().getExtras().getInt("listID"));
 		} else {
 			api = IngredientList.getLatestList();
@@ -63,6 +65,72 @@ public class ShoppingList extends MealfireActivity {
 		
 		api.setActivity(this);
 		api.setSuccessHandler(listHandler);
+		api.run();
+	}
+	
+	private void reloadData() {
+		rows.clear();
+		
+		for (int i = 0; i < ingredientList.getIngredientGroups().size(); i++) {
+			IngredientGroup ig = ingredientList.getIngredientGroups().get(i);
+			
+			rows.add(new IngredientRow(ig));
+			
+			for (Ingredient ingredient : ig.getIngredients()) {
+				rows.add(new IngredientRow(ingredient));
+			}
+		}
+		
+		runOnUiThread(new Runnable() {
+			public void run() {
+				adapter.notifyDataSetChanged();
+			}
+		});
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.shopping_list, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.hide_checked:
+	        hideChecked();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	private void hideChecked() {
+		// We can't hide anything until it's loaded.
+		if (ingredientList == null) {
+			return;
+		}
+		
+		// Grab all our checked ingredients.
+		ArrayList<Ingredient> checked = new ArrayList<Ingredient>();
+		
+		for (IngredientRow row : rows) {
+			if (row.getType() == IngredientRow.TYPE_INGREDIENT && row.checked) {
+				checked.add(row.ingredient);
+			}
+		}
+		
+		API<String> api = ingredientList.hideIngredients(checked);
+		api.setActivity(this);
+		
+		api.setSuccessHandler(new DataRunnable<String>() {
+			public void run(String data) throws JSONException {
+				reloadData();
+			}
+		});
+		
 		api.run();
 	}
 	
@@ -82,7 +150,7 @@ public class ShoppingList extends MealfireActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			IngredientRow row = rows.get(position);
 			
-			if (row.type == "GROUP") {
+			if (row.getType() == IngredientRow.TYPE_GROUP) {
 				if (convertView == null || convertView.findViewById(R.id.ingredient_group_text_view) == null) {
 					convertView = getLayoutInflater().inflate(R.layout.ingredient_group, null);
 				}
@@ -91,11 +159,12 @@ public class ShoppingList extends MealfireActivity {
 				textView.setText(row.toString());
 			} else {
 				if (convertView == null || convertView.findViewById(R.id.ingredient_text_view) == null) {
-					convertView = getLayoutInflater().inflate(R.layout.ingredient, null);
+					convertView = getLayoutInflater().inflate(R.layout.ingredient_with_checkmark, null);
 				}
 				
-				TextView textView = (TextView) convertView.findViewById(R.id.ingredient_text_view);
+				CheckedTextView textView = (CheckedTextView) convertView.findViewById(R.id.ingredient_text_view);
 				textView.setText(row.toString());
+				textView.setChecked(row.checked);
 			}
 			
 			return convertView;
@@ -110,7 +179,7 @@ public class ShoppingList extends MealfireActivity {
 		}
 		
 		public int getItemViewType(int position) {
-			return rows.get(position).type.hashCode();
+			return rows.get(position).getType();
 		}
 	}
 }

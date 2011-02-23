@@ -1,19 +1,47 @@
 package com.mealfire.activity;
 
+import com.mealfire.model.Ingredient;
+import com.mealfire.model.IngredientGroup;
+
 public class IngredientRow {
-	public String text;
-	public String type;
+	public static final int TYPE_GROUP = 0;
+	public static final int TYPE_INGREDIENT = 1;
 	
-	public IngredientRow(String text, String type) {
-		this.text = text;
-		this.type = type;
+	public Ingredient ingredient;
+	public IngredientGroup ingredientGroup;
+	public boolean checked = false;
+	
+	public IngredientRow(Ingredient ingredient) {
+		this.ingredient = ingredient;
+	}
+	
+	public IngredientRow(IngredientGroup ingredientGroup) {
+		this.ingredientGroup = ingredientGroup;
 	}
 	
 	public String toString() {
-		return text;
+		if (ingredient != null) {
+			return ingredient.toString();
+		} else {
+			return ingredientGroup.getName();
+		}
 	}
 	
+	public int getType() {
+		if (ingredient != null) {
+			return TYPE_INGREDIENT;
+		} else {
+			return TYPE_GROUP;
+		}
+	}
+	
+	@Override
 	public int hashCode() {
-		return (type + "-" + text).hashCode();
+		return toString().hashCode() + getType();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return this.hashCode() == o.hashCode();
 	}
 }

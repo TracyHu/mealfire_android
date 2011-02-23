@@ -42,11 +42,11 @@ public class ViewRecipe extends MealfireActivity {
 					IngredientGroup ig = recipe.getIngredientGroups().get(i);
 					
 					if (ig.getName() != null && !ig.getName().equals("") || i > 0) {
-						rows.add(new IngredientRow(ig.getName(), "GROUP"));
+						rows.add(new IngredientRow(ig));
 					}
 					
 					for (Ingredient ingredient : ig.getIngredients()) {
-						rows.add(new IngredientRow(ingredient.toString(), "INGREDIENT"));
+						rows.add(new IngredientRow(ingredient));
 					}
 				}
 				
@@ -66,7 +66,7 @@ public class ViewRecipe extends MealfireActivity {
 		
 		// Show the ingredients.
 		for (IngredientRow row : rows) {
-			if (row.type == "INGREDIENT") {
+			if (row.getType() == IngredientRow.TYPE_INGREDIENT) {
 				View view = getLayoutInflater().inflate(R.layout.ingredient, null);
 				TextView textView = (TextView) view.findViewById(R.id.ingredient_text_view);
 				textView.setText(row.toString());

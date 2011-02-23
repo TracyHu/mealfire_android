@@ -83,16 +83,22 @@ public class API<T> {
 					}
 				});
 			}
-		} catch (final Exception e) {
-			cancelToast();
-			
-			if (activity != null) {
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						activity.handleAPIException(API.this, e);
-					}
-				});
-			}
+		} catch (JSONException e) {
+			handleAPIException(e);
+		} catch (IOException e) {
+			handleAPIException(e);
+		}
+	}
+	
+	private void handleAPIException(final Exception e) {
+		cancelToast();
+		
+		if (activity != null) {
+			activity.runOnUiThread(new Runnable() {
+				public void run() {
+					activity.handleAPIException(API.this, e);
+				}
+			});
 		}
 	}
 	
