@@ -68,6 +68,19 @@ public class Home extends MealfireActivity {
 		
 		rows.add(shoppingListRow);
 		
+		HomeRow extrasRow = new HomeRow();
+		
+		extrasRow.title = "Extra Items";
+		extrasRow.image = R.drawable.extras;
+		extrasRow.onClick = new Runnable() {
+			public void run() {
+				Intent intent = new Intent(Home.this, ExtraItems.class);
+				Home.this.startActivity(intent);
+			}
+		};
+		
+		rows.add(extrasRow);
+		
 		HomeRow calendarRow = new HomeRow();
 		
 		calendarRow.title = "Calendar";
@@ -113,12 +126,20 @@ public class Home extends MealfireActivity {
 					rows.get(1).info = String.format("From %s", Utils.prettyDateTime(stats.getLatestList().getCreatedAt()));
 				}
 				
-				if (stats.getCalendarCount() == 0) {
-					rows.get(2).info = "You have no recipes scheduled";
-				} else if (stats.getCalendarCount() == 1) {
-					rows.get(2).info = "You have 1 recipe scheduled";
+				if (stats.getExtraItemsCount() == 0) {
+					rows.get(2).info = "You have no extra items";
+				} else if (stats.getExtraItemsCount() == 1) {
+					rows.get(2).info = "You have 1 extra item";
 				} else {
-					rows.get(2).info = String.format("You have %d recipes scheduled", stats.getCalendarCount());
+					rows.get(2).info = String.format("You have %d extra items", stats.getExtraItemsCount());
+				}
+				
+				if (stats.getCalendarCount() == 0) {
+					rows.get(3).info = "You have no recipes scheduled";
+				} else if (stats.getCalendarCount() == 1) {
+					rows.get(3).info = "You have 1 recipe scheduled";
+				} else {
+					rows.get(3).info = String.format("You have %d recipes scheduled", stats.getCalendarCount());
 				}
 				
 				runOnUiThread(new Runnable() {

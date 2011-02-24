@@ -19,15 +19,15 @@ import com.mealfire.api.DataRunnable;
 import com.mealfire.model.Ingredient;
 import com.mealfire.model.IngredientList;
 
-public class ShoppingList extends MealfireActivity {
-	private IngredientList ingredientList;
+public class ExtraItems extends MealfireActivity {
 	private IngredientListAdapter adapter;
+	private IngredientList ingredientList;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.list);
-		setTitle("Shopping List");
+		setTitle("Extra Items");
 		adapter = new IngredientListAdapter(this);
 		ListView listView = (ListView) findViewById(R.id.list_view);
 		listView.setAdapter(adapter);
@@ -40,32 +40,24 @@ public class ShoppingList extends MealfireActivity {
 				adapter.notifyDataSetChanged();
 			}
 		});
+				
+		API<IngredientList> api = IngredientList.getExtras();
+		api.setActivity(this);
 		
-		DataRunnable<IngredientList> listHandler = new DataRunnable<IngredientList>() {
+		api.setSuccessHandler(new DataRunnable<IngredientList>() {
 			public void run(IngredientList list) throws JSONException {
 				ingredientList = list;
 				adapter.loadData(list);
 			}
-		};
+		});
 		
-		API<IngredientList> api;
-		
-		if (getIntent().hasExtra("listID")) {
-			// We have an id, so no need to make two requests.
-			api = IngredientList.getList(getIntent().getExtras().getInt("listID"));
-		} else {
-			api = IngredientList.getLatestList();
-		}
-		
-		api.setActivity(this);
-		api.setSuccessHandler(listHandler);
 		api.run();
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.shopping_list, menu);
+	    inflater.inflate(R.menu.extra_items, menu);
 	    return true;
 	}
 	
@@ -73,15 +65,15 @@ public class ShoppingList extends MealfireActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.hide_checked:
-	        hideChecked();
+	    case R.id.remove_checked:
+	        removeChecked();
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
 	
-	private void hideChecked() {
+	private void removeChecked() {
 		// We can't hide anything until it's loaded.
 		if (ingredientList == null) {
 			return;
@@ -96,7 +88,7 @@ public class ShoppingList extends MealfireActivity {
 			}
 		}
 		
-		API<String> api = ingredientList.hideIngredients(checked);
+		API<String> api = ingredientList.hideExtraItems(checked);
 		api.setActivity(this);
 		
 		api.setSuccessHandler(new DataRunnable<String>() {

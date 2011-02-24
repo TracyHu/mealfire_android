@@ -16,5 +16,6 @@
         <activity android:name=".activity.Login"/>
         <activity android:name=".activity.ShoppingList"/>
         <activity android:name=".activity.Calendar"/>
+        <activity android:name=".activity.ExtraItems"/>
     </application>
 </manifest> 

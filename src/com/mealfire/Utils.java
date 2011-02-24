@@ -1,5 +1,8 @@
 package com.mealfire;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Hours;
@@ -37,6 +40,20 @@ public class Utils {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return output;
+    }
+	
+	@SuppressWarnings("unchecked")
+	public static String join(Collection collection, String delimiter) {
+        StringBuffer buffer = new StringBuffer();
+        Iterator iter = collection.iterator();
+        if (iter.hasNext()) {
+            buffer.append(iter.next());
+            while (iter.hasNext()) {
+                buffer.append(delimiter);
+                buffer.append(iter.next());
+            }
+        }
+        return buffer.toString();
     }
 	
 	// Past dates not supported.

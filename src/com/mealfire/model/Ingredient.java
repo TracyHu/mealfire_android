@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Ingredient {
+	private int id;
 	private String string;
 	private String food;
 	
@@ -12,6 +13,10 @@ public class Ingredient {
 		
 		if (obj.has("food")) {
 			this.food = obj.getString("food");
+		}
+		
+		if (obj.has("id")) {
+			this.id = obj.getInt("id");
 		}
 	}
 	
@@ -25,4 +30,5 @@ public class Ingredient {
 	
 	public String toString() { return string; }
 	public String getFood() { return food; }
+	public int getId() { return id; }
 }

@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mealfire.UserException;
+import com.mealfire.Utils;
 import com.mealfire.api.API;
 import com.mealfire.api.AbstractInlineAPI;
 import com.mealfire.api.DataTransformer;
@@ -37,6 +39,12 @@ public class IngredientList {
 			for (int i = 0; i < groups.length(); i++) {
 				ingredientGroups.add(new IngredientGroup(groups.getJSONObject(i)));
 			}
+		}
+	}
+	
+	public IngredientList(JSONArray groups) throws JSONException {
+		for (int i = 0; i < groups.length(); i++) {
+			ingredientGroups.add(new IngredientGroup(groups.getJSONObject(i)));
 		}
 	}
 	
@@ -66,7 +74,10 @@ public class IngredientList {
 			new IngredientListTransformer());
 	}
 	
-	@SuppressWarnings("unchecked")
+	public static API<IngredientList> getExtras() {
+		return new API<IngredientList>("me/extra_items", new ExtraItemsTransformer());
+	}
+	
 	public API<String> hideIngredients(ArrayList<Ingredient> ingredients) {
 		// Build our JSONArray.
 		JSONArray array = new JSONArray();
@@ -76,6 +87,18 @@ public class IngredientList {
 		}
 		
 		// Get rid of them on our end.
+		removeIngredients(ingredients);
+		
+		API<String> api = new API<String>(
+			String.format("me/lists/%d/hide_foods", this.id),
+			new StringTransformer());
+		
+		api.setParameter("foods", array.toString());
+		return api;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void removeIngredients(ArrayList<Ingredient> ingredients) {
 		for (IngredientGroup group : ingredientGroups) {
 			for (Ingredient i : ingredients) {
 				group.getIngredients().remove(i);
@@ -90,13 +113,23 @@ public class IngredientList {
 		});
 		
 		ingredientGroups = new ArrayList<IngredientGroup>(newIG);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public API<String> hideExtraItems(ArrayList<Ingredient> ingredients) {
+		Collection ids = CollectionUtils.collect(ingredients, new Transformer() {
+			public Object transform(Object obj) {
+				return ((Ingredient) obj).getId();
+			}
+		});
 		
-		API<String> api = new API<String>(
-			String.format("me/lists/%d/hide_foods", this.id),
+		String idString = Utils.join(ids, ",");
+		
+		removeIngredients(ingredients);
+		
+		return new API<String>(
+			String.format("me/extra_items/%s/delete", idString),
 			new StringTransformer());
-		
-		api.setParameter("foods", array.toString());
-		return api;
 	}
 	
 	public ArrayList<IngredientGroup> getIngredientGroups() { return ingredientGroups; }
@@ -106,6 +139,12 @@ public class IngredientList {
 	private static class IngredientListTransformer implements DataTransformer<IngredientList> {
 		public IngredientList transform(JSONArray array) throws JSONException {
 			return new IngredientList(array.getJSONObject(1));
+		}
+	}
+	
+	private static class ExtraItemsTransformer implements DataTransformer<IngredientList> {
+		public IngredientList transform(JSONArray array) throws JSONException {
+			return new IngredientList(array.getJSONArray(1));
 		}
 	}
 	
