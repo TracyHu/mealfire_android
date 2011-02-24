@@ -110,7 +110,15 @@ public class Home extends MealfireActivity {
 					rows.get(1).info = "No shopping lists... yet.";
 				} else {
 					shoppingListId = stats.getLatestList().getId();
-					rows.get(1).info = String.format("From %s", Utils.prettyDate(stats.getLatestList().getCreatedAt()));
+					rows.get(1).info = String.format("From %s", Utils.prettyDateTime(stats.getLatestList().getCreatedAt()));
+				}
+				
+				if (stats.getCalendarCount() == 0) {
+					rows.get(2).info = "You have no recipes scheduled";
+				} else if (stats.getCalendarCount() == 1) {
+					rows.get(2).info = "You have 1 recipe scheduled";
+				} else {
+					rows.get(2).info = String.format("You have %d recipes scheduled", stats.getCalendarCount());
 				}
 				
 				runOnUiThread(new Runnable() {

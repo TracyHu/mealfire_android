@@ -38,9 +38,11 @@ public class User {
 	public static class Stats {
 		private int recipeCount;
 		private IngredientList latestList;
+		private int calendarCount;
 		
 		public Stats(JSONObject obj) throws JSONException {
 			recipeCount = obj.getInt("recipe_count");
+			calendarCount = obj.getInt("calendar_count");
 			
 			if (obj.getJSONObject("latest_list") != null) {
 				latestList = new IngredientList(obj.getJSONObject("latest_list"));
@@ -49,6 +51,7 @@ public class User {
 		
 		public int getRecipeCount() { return recipeCount; }
 		public IngredientList getLatestList() { return latestList; }
+		public int getCalendarCount() { return calendarCount; }
 	}
 	
 	private static class StatsTransformer implements DataTransformer<Stats> {

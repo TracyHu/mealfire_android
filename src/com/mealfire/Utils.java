@@ -39,8 +39,23 @@ public class Utils {
         return output;
     }
 	
-	// Future dates not supported.
+	// Past dates not supported.
 	public static String prettyDate(DateTime date) {
+		DateTime now = new DateTime();
+				
+		if (date.isBefore(now.plusDays(1).withMillisOfDay(0))) {
+			return "Today";
+		} else if (date.isBefore(now.plusDays(2).withMillisOfDay(0))) {
+			return "Tomorrow";
+		} else if (date.isBefore(now.plusDays(7).withMillisOfDay(0))) {
+			return date.dayOfWeek().getAsText();
+		} else {
+			return date.toString("MMMM dd");
+		}
+	}
+	
+	// Future dates not supported.
+	public static String prettyDateTime(DateTime date) {
 		Interval interval = new Interval(date, new DateTime());
 		Duration duration = interval.toDuration();
 		
@@ -60,8 +75,8 @@ public class Utils {
 		} else {
 			int hours = Hours.hoursIn(interval).getHours();
 			DateTime today = new DateTime().withHourOfDay(1);
-			DateTime yesterday = new DateTime().minusDays(1).withHourOfDay(1);
-			DateTime twoDaysAgo = new DateTime().minusDays(2).withHourOfDay(1);
+			DateTime yesterday = new DateTime().minusDays(1).withMillisOfDay(0);
+			DateTime twoDaysAgo = new DateTime().minusDays(2).withMillisOfDay(0);
 			
 			if (hours > 6 && date.isAfter(yesterday) && date.isBefore(today)) {
 				return "yesterday";
@@ -73,7 +88,7 @@ public class Utils {
 				} else {
 					return String.format("%d hours ago", hours);
 				}
-			} else if (date.isAfter(new DateTime().withDayOfYear(1))) {
+			} else if (date.isAfter(new DateTime().withDayOfYear(1).withMillisOfDay(0))) {
 				return date.toString("MMMM d");
 			} else {
 				return date.toString("MMMM d, YYYY");

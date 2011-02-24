@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.mealfire.R;
+import com.mealfire.Utils;
 import com.mealfire.api.API;
 import com.mealfire.api.DataRunnable;
 import com.mealfire.model.CalendarDay;
@@ -43,6 +44,7 @@ public class Calendar extends MealfireActivity {
 						rows.add(new CalendarRow(calDay.getDay()));
 					}
 					rows.add(new CalendarRow(calDay));
+					lastDay = calDay.getDay();
 				}
 				
 				runOnUiThread(new Runnable() {
@@ -61,7 +63,7 @@ public class Calendar extends MealfireActivity {
 		public String headerTitle;
 		
 		public CalendarRow(DateTime date) {
-			headerTitle = date.toString("E, MM d");
+			headerTitle = Utils.prettyDate(date);
 		}
 		
 		public CalendarRow(CalendarDay day) {
