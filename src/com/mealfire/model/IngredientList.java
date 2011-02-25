@@ -78,6 +78,20 @@ public class IngredientList {
 		return new API<IngredientList>("me/extra_items", new ExtraItemsTransformer());
 	}
 	
+	public static API<IngredientList> addExtraItem(final String item) {
+		return new API<IngredientList>(new AbstractInlineAPI() {
+			@Override
+			public JSONArray run() throws JSONException, IOException {
+				InlineAPI addApi = new InlineAPI("me/extra_items/add");
+				addApi.setParameter("item", item);
+				addApi.run();
+				
+				InlineAPI getApi = new InlineAPI("me/extra_items");
+				return getApi.run();
+			}
+		}, new ExtraItemsTransformer());
+	}
+	
 	public API<String> hideIngredients(ArrayList<Ingredient> ingredients) {
 		// Build our JSONArray.
 		JSONArray array = new JSONArray();

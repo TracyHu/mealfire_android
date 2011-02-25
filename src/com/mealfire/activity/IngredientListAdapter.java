@@ -51,7 +51,17 @@ public class IngredientListAdapter extends BaseAdapter {
 	}
 
 	public Object getItem(int position) {
-		return rows.get(position);
+		IngredientRow row = rows.get(position);
+		
+		if (row.getType() == IngredientRow.TYPE_GROUP) {
+			return row.hashCode();
+		} else {
+			if (row.ingredient.getId() > 0) {
+				return row.ingredient.getId();
+			} else {
+				return row.hashCode();
+			}
+		}
 	}
 
 	public long getItemId(int position) {

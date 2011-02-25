@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:paddingLeft="6dip"
+		android:paddingRight="6dip"
+		android:paddingTop="8dip">
+	<EditText android:id="@+id/add_input"
+			android:layout_marginTop="3dip"
+			android:layout_weight="1"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:inputType="textAutoCorrect"
+        	android:imeOptions="actionGo"
+        	android:hint="Add Extra Item"/>
+    <Button android:id="@+id/add_button"
+     		android:layout_height="wrap_content"
+     		android:layout_width="wrap_content"
+     		android:text="Add" />
+</LinearLayout>
