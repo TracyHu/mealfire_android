@@ -4,7 +4,8 @@
 		android:layout_height="wrap_content"
 		android:paddingLeft="6dip"
 		android:paddingRight="6dip"
-		android:paddingTop="8dip">
+		android:paddingTop="8dip"
+		android:background="#E5E5E5">
 	<EditText android:id="@+id/add_input"
 			android:layout_marginTop="3dip"
 			android:layout_weight="1"
