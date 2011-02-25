@@ -21,16 +21,13 @@ public class MealfireActivity extends Activity {
 			if (pref.getString("token", null) == null) {
 				Intent intent = new Intent(this, Login.class);
 				startActivity(intent);
-				return;
 			} else {
 				User.setToken(pref.getString("token", null));
 			}
 		}
 	}
 	
-	public void validateLogin() {
-		requireLogin();
-		
+	public void validateLogin() {		
 		if (User.getToken() == null)
 			return;
 		

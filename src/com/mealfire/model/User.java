@@ -11,6 +11,10 @@ import com.mealfire.api.StringTransformer;
 public class User {
 	private static String token;
 	
+	public static boolean isLoggedIn() {
+		return token != null;
+	}
+	
 	public static API<String> authorize(String email, String password) {
 		API<String> api = new API<String>("authorize", new StringTransformer());
 		api.setParameter("email", email);

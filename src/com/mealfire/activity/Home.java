@@ -150,7 +150,9 @@ public class Home extends MealfireActivity {
 			}
 		});
 		
-		api.run();
+		if (User.isLoggedIn()) {
+			api.run();
+		}
 	}
 	
 	private class HomeAdapter extends BaseAdapter {
