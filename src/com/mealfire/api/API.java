@@ -5,15 +5,12 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.widget.Toast;
-
 import com.mealfire.UserException;
 import com.mealfire.activity.MealfireActivity;
 
 public class API<T> {
 	private AbstractInlineAPI inlineAPI;
 	private MealfireActivity activity;
-	private Toast toast;
 	private DataRunnable<String> errorHandler;
 	private DataRunnable<T> successHandler;
 	private DataTransformer<T> transformer;
@@ -59,8 +56,8 @@ public class API<T> {
 	
 	public void run() {
 		if (activity != null) {
-			toast = Toast.makeText(activity, "Loading...", Toast.LENGTH_LONG);
-			toast.show();
+			activity.setProgressBarIndeterminateVisibility(true);
+		    activity.setProgressBarVisibility(true);
 		}
 		
 		(new Thread() {
@@ -118,7 +115,13 @@ public class API<T> {
 	}
 	
 	private void cancelToast() {
-		if (toast != null)
-			toast.cancel();
+		if (activity != null) {
+			activity.runOnUiThread(new Runnable() {
+				public void run() {
+					activity.setProgressBarIndeterminateVisibility(false);
+				    activity.setProgressBarVisibility(false);
+				}
+			});
+		}
 	}
 }

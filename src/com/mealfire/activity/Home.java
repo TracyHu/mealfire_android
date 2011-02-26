@@ -108,6 +108,7 @@ public class Home extends MealfireActivity {
 		
 		// Show some stats.
 		API<User.Stats> api = User.getUserStats();
+		api.setActivity(this);
 		
 		api.setSuccessHandler(new DataRunnable<User.Stats>() {
 			public void run(User.Stats stats) throws JSONException {

@@ -7,13 +7,23 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.Window;
 
 import com.mealfire.UserException;
 import com.mealfire.api.API;
 import com.mealfire.api.DataRunnable;
 import com.mealfire.model.User;
 
-public class MealfireActivity extends Activity {	
+public class MealfireActivity extends Activity {
+	@Override
+	protected void onCreate(Bundle icicle) {
+		super.onCreate(icicle);
+		
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+	    requestWindowFeature(Window.FEATURE_PROGRESS);
+	}
+	
 	public void requireLogin() {
 		if (User.getToken() == null) {
 			SharedPreferences pref = getSharedPreferences("com.mealfire", MODE_PRIVATE);
