@@ -71,7 +71,7 @@ public class API<T> {
 		try {
 			threadedGet();
 		} catch (final UserException e) {
-			cancelToast();
+			cancelProgresBar();
 			
 			if (activity != null) {
 				activity.runOnUiThread(new Runnable() {
@@ -88,7 +88,7 @@ public class API<T> {
 	}
 	
 	private void handleAPIException(final Exception e) {
-		cancelToast();
+		cancelProgresBar();
 		
 		if (activity != null) {
 			activity.runOnUiThread(new Runnable() {
@@ -111,10 +111,10 @@ public class API<T> {
 			}
 		}
 		
-		cancelToast();
+		cancelProgresBar();
 	}
 	
-	private void cancelToast() {
+	private void cancelProgresBar() {
 		if (activity != null) {
 			activity.runOnUiThread(new Runnable() {
 				public void run() {
