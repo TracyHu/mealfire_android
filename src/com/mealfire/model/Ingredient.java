@@ -15,7 +15,7 @@ public class Ingredient {
 			this.food = obj.getString("food");
 		}
 		
-		if (obj.has("id")) {
+		if (!obj.isNull("id")) {
 			this.id = obj.getInt("id");
 		}
 	}
