@@ -2,6 +2,7 @@ package com.mealfire.model;
 
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 import com.mealfire.PagedList;
 import com.mealfire.api.API;
 import com.mealfire.api.DataTransformer;
+import com.mealfire.api.StringTransformer;
 
 public class Recipe {
 	private int id;
@@ -38,6 +40,18 @@ public class Recipe {
 		if (obj.has("directions")) {
 			directions = obj.getString("directions");
 		}
+	}
+	
+	public API<String> schedule(DateTime day) {
+		API<String> api = new API<String>(
+			String.format("me/recipes/%d/schedule", id),
+			new StringTransformer());
+		
+		api.setParameter("year", day.getYear());
+		api.setParameter("month", day.getMonthOfYear());
+		api.setParameter("day", day.getDayOfMonth());
+		
+		return api;
 	}
 	
 	public static API<PagedList<Recipe>> searchRecipes(String query) {

@@ -2,15 +2,23 @@ package com.mealfire.activity;
 
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mealfire.R;
+import com.mealfire.Utils;
 import com.mealfire.api.API;
 import com.mealfire.api.DataRunnable;
 import com.mealfire.model.Ingredient;
@@ -82,5 +90,64 @@ public class ViewRecipe extends MealfireActivity {
 		// Show the directions.
 		directions.loadDataWithBaseURL("http://mealfire.com",
 			recipe.getDirections(), "text/html", "utf-8", null);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.schedule, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.schedule:
+	    	scheduleRecipe();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	private void scheduleRecipe() {
+		if (recipe == null) {
+			return;
+		}
+		
+		String[] days = {
+			Utils.prettyDate(new DateTime()),
+			Utils.prettyDate(new DateTime().plusDays(1)),
+			Utils.prettyDate(new DateTime().plusDays(2)),
+			Utils.prettyDate(new DateTime().plusDays(3)),
+			Utils.prettyDate(new DateTime().plusDays(4)),
+			Utils.prettyDate(new DateTime().plusDays(5)),
+			Utils.prettyDate(new DateTime().plusDays(6))};
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Choose a day");
+		
+		builder.setItems(days, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int position) {
+		    	scheduleRecipe(new DateTime().plusDays(position));
+		    }
+		});
+		
+		builder.create().show();
+	}
+	
+	private void scheduleRecipe(DateTime day) {
+		API<String> api = recipe.schedule(day);
+		api.setActivity(this);
+		
+		api.setSuccessHandler(new DataRunnable<String>() {
+			public void run(String data) throws JSONException {
+				Intent intent = new Intent(ViewRecipe.this, Calendar.class);
+				ViewRecipe.this.startActivity(intent);
+			}
+		});
+		
+		api.run();
 	}
 }
