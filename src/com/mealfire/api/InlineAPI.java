@@ -60,6 +60,8 @@ public class InlineAPI extends AbstractInlineAPI {
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(response.getEntity().getContent(), writer);
 		json = writer.toString();
+		
+		client.close();
 
 		return new JSONArray(json);
 	}
