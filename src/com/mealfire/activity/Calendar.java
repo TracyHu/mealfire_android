@@ -5,7 +5,14 @@ import java.util.ArrayList;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,6 +24,8 @@ import com.mealfire.Utils;
 import com.mealfire.api.API;
 import com.mealfire.api.DataRunnable;
 import com.mealfire.model.CalendarDay;
+import com.mealfire.model.IngredientList;
+import com.mealfire.model.Store;
 
 public class Calendar extends MealfireActivity {
 	private ArrayList<CalendarRow> rows = new ArrayList<CalendarRow>();
@@ -58,12 +67,134 @@ public class Calendar extends MealfireActivity {
 		api.run();
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.calendar, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.create_list:
+	    	createList();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	public void createList() {
+		API<ArrayList<Store>> api = Store.all();
+		api.setActivity(this);
+		
+		api.setSuccessHandler(new DataRunnable<ArrayList<Store>>() {
+			public void run(final ArrayList<Store> stores) throws JSONException {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						if (stores.size() == 0) {
+							createList(null);
+						} else if (stores.size() == 1) {
+							createList(stores.get(0));
+						} else {
+							chooseStore(stores);
+						}
+					}
+				});
+			}
+		});
+		
+		api.run();
+	}
+	
+	public void chooseStore(final ArrayList<Store> stores) {
+		String[] storeNames = new String[stores.size()];
+		
+		for (int i = 0; i < stores.size(); i++) {
+			storeNames[i] = stores.get(i).getName();
+		}
+			
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Choose a store");
+		
+		builder.setItems(storeNames, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int position) {
+		    	createList(stores.get(position));
+		    }
+		});
+		
+		builder.create().show();
+	}
+	
+	public void createList(Store store) {
+		// Grab all the data we need.
+		final ArrayList<String> dayNames = new ArrayList<String>();
+		final ArrayList<DateTime> days = new ArrayList<DateTime>();
+		
+		for (CalendarRow row : rows) { 
+			if (row.isHeader()) {
+				dayNames.add(row.toString());
+				days.add(row.headerDay);
+			}
+		}
+		
+		// And a list of checked values.
+		final boolean[] checked = new boolean[dayNames.size()];
+		
+		for (int i = 0; i < checked.length; i++) {
+			checked[i] = false;
+		}
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Choose the days");
+		
+		builder.setMultiChoiceItems(
+			(String[]) dayNames.toArray(new String[dayNames.size()]),
+			checked,
+			new OnMultiChoiceClickListener() {
+				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+					checked[which] = isChecked;
+				}
+			});
+		
+		builder.setCancelable(true);
+		
+	    builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+        	   ArrayList<DateTime> checkedDays = new ArrayList<DateTime>();
+        	   
+        	   for (int i = 0; i < checked.length; i++) {
+        		   if (checked[i]) {
+        			   checkedDays.add(days.get(i));
+        		   }
+        	   }
+        	   
+        	   API<IngredientList> api = IngredientList.createList(checkedDays);
+        	   api.setActivity(Calendar.this);
+        	   
+        	   api.setSuccessHandler(new DataRunnable<IngredientList>() {
+        		   public void run(IngredientList list) throws JSONException {
+        			   	Intent intent = new Intent(Calendar.this, ShoppingList.class);
+       					intent.putExtra("listID", list.getId());
+       					Calendar.this.startActivity(intent);
+        		   }
+        	   });
+        	   
+        	   api.run();
+           }
+       });
+		
+		builder.create().show();
+	}
+	
 	private static class CalendarRow {
 		public CalendarDay day;
-		public String headerTitle;
+		public DateTime headerDay;
 		
 		public CalendarRow(DateTime date) {
-			headerTitle = Utils.prettyDate(date);
+			headerDay = date;
 		}
 		
 		public CalendarRow(CalendarDay day) {
@@ -71,12 +202,12 @@ public class Calendar extends MealfireActivity {
 		}
 		
 		public boolean isHeader() {
-			return headerTitle != null;
+			return headerDay != null;
 		}
 		
 		public String toString() {
 			if (isHeader()) {
-				return headerTitle;
+				return Utils.prettyDate(headerDay);
 			} else {
 				return day.getRecipe().getName();
 			}

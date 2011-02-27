@@ -48,6 +48,22 @@ public class IngredientList {
 		}
 	}
 	
+	public static API<IngredientList> createList(ArrayList<DateTime> days) {
+		ArrayList<String> dayStrings = new ArrayList<String>();
+		
+		for (DateTime day : days) {
+			dayStrings.add(day.toString("YYYY-M-d"));
+		}
+		
+		API<IngredientList> api = new API<IngredientList>(
+			"me/lists/create",
+			new IngredientListTransformer());
+		
+		api.setParameter("days", Utils.join(dayStrings, ","));
+		
+		return api;
+	}
+	
 	public static API<IngredientList> getLatestList() {
 		return new API<IngredientList>(new AbstractInlineAPI() {
 			@Override
