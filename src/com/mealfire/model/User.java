@@ -50,7 +50,7 @@ public class User {
 			calendarCount = obj.getInt("calendar_count");
 			extraItemsCount = obj.getInt("extra_items_count");
 			
-			if (obj.getJSONObject("latest_list") != null) {
+			if (!obj.isNull("latest_list")) {
 				latestList = new IngredientList(obj.getJSONObject("latest_list"));
 			}
 		}
