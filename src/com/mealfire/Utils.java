@@ -1,5 +1,12 @@
 package com.mealfire;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -20,6 +27,24 @@ import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 
 public class Utils {
+	public static void copy(InputStream input, OutputStream output) throws IOException {
+		byte[] buffer = new byte[1024];
+		int n = 0;
+		
+		while (-1 != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+		}
+	}
+
+	public static void copy(InputStream input, Writer writer) throws IOException {
+        char[] buffer = new char[1024];
+        Reader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+        int n;
+        while ((n = reader.read(buffer)) != -1) {
+            writer.write(buffer, 0, n);
+        }
+	}
+	
 	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
                 .getHeight(), Config.ARGB_8888);

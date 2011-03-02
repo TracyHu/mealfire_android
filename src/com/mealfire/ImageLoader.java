@@ -10,8 +10,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Stack;
 
-import org.apache.commons.io.IOUtils;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -80,7 +78,7 @@ public class ImageLoader {
             Bitmap bitmap=null;
             InputStream is=new URL(url).openStream();
             OutputStream os = new FileOutputStream(f);
-            IOUtils.copy(is, os);
+            Utils.copy(is, os);
             os.close();
             bitmap = decodeFile(f);
             return bitmap;

@@ -2,11 +2,7 @@ package com.mealfire.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -127,7 +123,6 @@ public class IngredientList {
 		return api;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void removeIngredients(ArrayList<Ingredient> ingredients) {
 		for (IngredientGroup group : ingredientGroups) {
 			for (Ingredient i : ingredients) {
@@ -135,23 +130,23 @@ public class IngredientList {
 			}
 		}
 		
-		// And the now-empty groups.
-		Collection<IngredientGroup> newIG = CollectionUtils.select(ingredientGroups, new Predicate() {
-			public boolean evaluate(Object obj) {
-				return ((IngredientGroup) obj).getIngredients().size() > 0;
-			}
-		});
+		ArrayList<IngredientGroup> igs = new ArrayList<IngredientGroup>();
 		
-		ingredientGroups = new ArrayList<IngredientGroup>(newIG);
+		for (IngredientGroup ig : ingredientGroups) {
+			if (ig.getIngredients().size() > 0) {
+				igs.add(ig);
+			}
+		}
+		
+		ingredientGroups = igs;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public API<String> hideExtraItems(ArrayList<Ingredient> ingredients) {
-		Collection ids = CollectionUtils.collect(ingredients, new Transformer() {
-			public Object transform(Object obj) {
-				return ((Ingredient) obj).getId();
-			}
-		});
+		ArrayList<Integer> ids = new ArrayList<Integer>(ingredients.size());
+		
+		for (Ingredient i : ingredients) {
+			ids.add(i.getId());
+		}
 		
 		String idString = Utils.join(ids, ",");
 		

@@ -6,14 +6,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.net.http.AndroidHttpClient;
-
+import com.mealfire.Utils;
 import com.mealfire.model.User;
 
 public class InlineAPI extends AbstractInlineAPI {
@@ -35,7 +34,7 @@ public class InlineAPI extends AbstractInlineAPI {
 		HttpResponse response = null;
 		String json = null;
 		
-		AndroidHttpClient client = AndroidHttpClient.newInstance("Mealfire for Android");
+		DefaultHttpClient client = new DefaultHttpClient();
 		
 		// Create the query string.
 		StringBuilder query = new StringBuilder();
@@ -58,11 +57,9 @@ public class InlineAPI extends AbstractInlineAPI {
 			String.format("http://mealfire.com/api/v2/%s.js?%s", action, query.toString())));
 						
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(response.getEntity().getContent(), writer);
+		Utils.copy(response.getEntity().getContent(), writer);
 		json = writer.toString();
 		
-		client.close();
-
 		return new JSONArray(json);
 	}
 }
