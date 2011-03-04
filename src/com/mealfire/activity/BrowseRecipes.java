@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnKeyListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.mealfire.ImageLoader;
@@ -29,13 +31,14 @@ import com.mealfire.api.API;
 import com.mealfire.api.DataRunnable;
 import com.mealfire.model.Recipe;
 
-public class BrowseRecipes extends MealfireActivity {
+public class BrowseRecipes extends MealfireActivity implements OnScrollListener {
 	private ListView recipesView;
 	private ArrayList<Recipe> recipes = new ArrayList<Recipe>();
 	private int total = 0;
 	private BaseAdapter adapter;
 	private String searchQuery;
 	private EditText searchBox;
+	private boolean flinging;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -51,6 +54,7 @@ public class BrowseRecipes extends MealfireActivity {
 		recipesView.addHeaderView(searchRow);
 		adapter = new RecipesAdapter();
 		recipesView.setAdapter(adapter);
+		recipesView.setOnScrollListener(this);
 		
 		fetchMore();
 		
@@ -148,13 +152,32 @@ public class BrowseRecipes extends MealfireActivity {
 		return total > recipes.size();
 	}
 	
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		System.out.println(scrollState);
+		
+        if (scrollState != OnScrollListener.SCROLL_STATE_FLING) {
+        	flinging = false;
+            int count = view.getChildCount();
+            
+            for (int i = 0; i < count; i++) {
+                View convertView = view.getChildAt(i);
+                Recipe recipe = (Recipe) convertView.getTag();
+                ImageView image = (ImageView) convertView.findViewById(R.id.icon);
+                
+                if (recipe != null && recipe.getImageURL() != null) {
+                	ImageLoader.loadImage(this, image, recipe.getImageURL());
+                }
+            }
+        } else {
+        	flinging = true;
+        }
+    }
+
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+            int totalItemCount) {
+    }
+	
 	private class RecipesAdapter extends BaseAdapter {
-		public ImageLoader imageLoader;
-		
-		public RecipesAdapter() {
-	        imageLoader = new ImageLoader(BrowseRecipes.this.getApplicationContext());
-	    }
-		
 		public int getCount() {
 			if (hasMore())
 				return recipes.size() + 1;
@@ -190,11 +213,17 @@ public class BrowseRecipes extends MealfireActivity {
 			ImageView image = (ImageView) convertView.findViewById(R.id.icon);
 			Recipe recipe = recipes.get(position);
 			
+			convertView.setTag(recipe);
+			
 			name.setText(recipe.getName());
 			image.setTag(recipe.getImageURL());
 			
 			if (recipe.getImageURL() != null) {
-				imageLoader.DisplayImage(recipe.getImageURL(), BrowseRecipes.this, image);
+				image.setImageResource(R.drawable.placeholder);
+				
+				if (!flinging) {
+					ImageLoader.loadImage(BrowseRecipes.this, image, recipe.getImageURL());
+				}
 			} else {
 				image.setImageResource(R.drawable.no_image); 
 			}
