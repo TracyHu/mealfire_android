@@ -125,7 +125,7 @@ public class BrowseRecipes extends MealfireActivity implements OnScrollListener 
 		}
 
 		api.setActivity(this);
-		api.setParameter("limit", 25);
+		api.setParameter("limit", 50);
 		api.setParameter("offset", recipes.size());
 		api.setParameter("include", "image_thumb");
 		
