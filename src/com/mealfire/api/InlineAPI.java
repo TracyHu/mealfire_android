@@ -1,11 +1,15 @@
 package com.mealfire.api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -52,12 +56,26 @@ public class InlineAPI extends AbstractInlineAPI {
 			
 			i++;
 		}
-	
-		response = client.execute(new HttpGet(
-			String.format("http://mealfire.com/api/v2/%s.js?%s", action, query.toString())));
+		
+		HttpGet request = new HttpGet(
+			String.format("http://mealfire.com/api/v2/%s.js?%s", action, query.toString()));
+		
+		request.addHeader("Accept-Encoding", "gzip");
+		response = client.execute(request);
+		
+		Header encoding = response.getEntity().getContentEncoding();
+		InputStream is = response.getEntity().getContent();
+		
+		if (encoding != null) {
+			for (HeaderElement element : encoding.getElements()) {
+				if (element.getName().equalsIgnoreCase("gzip")) {
+					is = new GZIPInputStream(is);
+				}
+			}
+		}
 						
 		StringWriter writer = new StringWriter();
-		Utils.copy(response.getEntity().getContent(), writer);
+		Utils.copy(is, writer);
 		json = writer.toString();
 		
 		return new JSONArray(json);
