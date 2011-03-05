@@ -27,4 +27,23 @@
      		android:layout_width="fill_parent"
      		android:onClick="submit"
      		android:text="Login" />
+     <TextView
+			android:textSize="16sp"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dip"
+			android:text="Need an account? Head to"/>
+	<TextView
+			android:textSize="16sp"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="2dip"
+			android:textStyle="bold"
+			android:text="http://mealfire.com"/>
+	<TextView
+			android:textSize="16sp"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="3dip"
+			android:text="on your PC to sign up for free!"/>
 </LinearLayout>
