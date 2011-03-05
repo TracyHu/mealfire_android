@@ -18,9 +18,11 @@ public class ImageLoader {
 	
 	public static void loadImage(final Activity activity, final ImageView imageView, final String url) {
 		// It's in the cache, we're done.
-		if (cache.containsKey(url)) {
-			imageView.setImageBitmap(cache.get(url));
-			return;
+		synchronized (cache) {
+			if (cache.containsKey(url)) {
+				imageView.setImageBitmap(cache.get(url));
+				return;
+			}
 		}
 		
 		(new Thread() {
@@ -35,13 +37,15 @@ public class ImageLoader {
 					return;
 				}
 				
-				cache.put(url, bitmap);
-				
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						imageView.setImageBitmap(bitmap);
 					}
 				});
+				
+				synchronized (cache) {
+					cache.put(url, bitmap);
+				}
 			}
 		}).start();
 	}
