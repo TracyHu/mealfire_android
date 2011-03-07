@@ -46,6 +46,7 @@ public class Calendar extends MealfireActivity {
 		
 		API<ArrayList<CalendarDay>> api = CalendarDay.getCalendar();
 		api.setActivity(this);
+		api.setParameter("include", "recipe[image_thumb]");
 		
 		api.setSuccessHandler(new DataRunnable<ArrayList<CalendarDay>>() {
 			public void run(ArrayList<CalendarDay> days) throws JSONException {
