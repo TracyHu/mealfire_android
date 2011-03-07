@@ -17,11 +17,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.mealfire.ImageLoader;
 import com.mealfire.R;
@@ -48,6 +50,16 @@ public class Calendar extends MealfireActivity {
 		listView.setDivider(null);
 		registerForContextMenu(listView);
 		loadData();
+		
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Recipe recipe = rows.get(position).day.getRecipe();
+				
+				Intent intent = new Intent(Calendar.this, ViewRecipe.class);
+				intent.putExtra("recipeID", recipe.getID());
+				Calendar.this.startActivity(intent);
+			}
+		});
 	}
 	
 	public void loadData() {
