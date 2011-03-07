@@ -9,12 +9,15 @@ import org.json.JSONObject;
 
 import com.mealfire.api.API;
 import com.mealfire.api.DataTransformer;
+import com.mealfire.api.StringTransformer;
 
 public class CalendarDay {
+	private int id;
 	private Recipe recipe;
 	private DateTime day;
 	
 	public CalendarDay(JSONObject obj) throws JSONException {
+		id = obj.getInt("id");
 		recipe = new Recipe(obj.getJSONObject("recipe"));
 		String[] dayParts = obj.getString("day").split("-");
 		day = new DateTime(
@@ -28,9 +31,16 @@ public class CalendarDay {
 		return new API<ArrayList<CalendarDay>>("me/calendar",
 			new CalendarTransformer());
 	}
+	
+	public API<String> delete() {
+		return new API<String>(
+			String.format("me/calendar/%s/delete", id),
+			new StringTransformer());
+	}
 
 	public Recipe getRecipe() { return recipe; }
 	public DateTime getDay() { return day; }
+	public int getId() { return id; }
 	
 	private static class CalendarTransformer implements DataTransformer<ArrayList<CalendarDay>> {
 		public ArrayList<CalendarDay> transform(JSONArray array) throws JSONException {

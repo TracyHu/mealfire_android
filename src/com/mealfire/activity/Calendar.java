@@ -10,15 +10,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.mealfire.ImageLoader;
 import com.mealfire.R;
@@ -43,7 +46,11 @@ public class Calendar extends MealfireActivity {
 		adapter = new CalendarAdapter();
 		listView.setAdapter(adapter);
 		listView.setDivider(null);
-		
+		registerForContextMenu(listView);
+		loadData();
+	}
+	
+	public void loadData() {
 		API<ArrayList<CalendarDay>> api = CalendarDay.getCalendar();
 		api.setActivity(this);
 		api.setParameter("include", "recipe[image_thumb]");
@@ -51,6 +58,7 @@ public class Calendar extends MealfireActivity {
 		api.setSuccessHandler(new DataRunnable<ArrayList<CalendarDay>>() {
 			public void run(ArrayList<CalendarDay> days) throws JSONException {
 				DateTime lastDay = null;
+				rows.clear();
 				
 				for (CalendarDay calDay : days) {
 					if (lastDay == null || !lastDay.equals(calDay.getDay())) {
@@ -88,6 +96,39 @@ public class Calendar extends MealfireActivity {
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.calendar_context, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+		case R.id.remove_recipe:
+			CalendarRow row = rows.get(info.position);
+			deleteDay(row.day);
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+	
+	private void deleteDay(CalendarDay day) {
+		API<String> api = day.delete();
+		api.setActivity(this);
+		
+		api.setSuccessHandler(new DataRunnable<String>() {
+			public void run(String data) throws JSONException {
+				loadData();
+			}
+		});
+		
+		api.run();
 	}
 	
 	public void createList() {
@@ -266,6 +307,7 @@ public class Calendar extends MealfireActivity {
 				}
 			}
 			
+			convertView.setTag(row);
 			return convertView;
 		}
 
