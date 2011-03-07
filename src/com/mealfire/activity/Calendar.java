@@ -16,15 +16,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.mealfire.ImageLoader;
 import com.mealfire.R;
 import com.mealfire.Utils;
 import com.mealfire.api.API;
 import com.mealfire.api.DataRunnable;
 import com.mealfire.model.CalendarDay;
 import com.mealfire.model.IngredientList;
+import com.mealfire.model.Recipe;
 import com.mealfire.model.Store;
 
 public class Calendar extends MealfireActivity {
@@ -243,11 +246,23 @@ public class Calendar extends MealfireActivity {
 				textView.setText(row.toString());
 			} else {
 				if (convertView == null || convertView.findViewById(R.id.text) == null) {
-					convertView = getLayoutInflater().inflate(R.layout.row, null);
+					convertView = getLayoutInflater().inflate(R.layout.recipe_row, null);
 				}
 				
-				TextView textView = (TextView) convertView.findViewById(R.id.text);
+				TextView textView = (TextView) convertView.findViewById(R.id.recipe_name);
+				ImageView image = (ImageView) convertView.findViewById(R.id.icon);
+				View separator = convertView.findViewById(R.id.separator);
+				Recipe recipe = row.day.getRecipe();
+				
 				textView.setText(row.toString());
+				separator.setVisibility(View.VISIBLE);
+				
+				if (recipe.getImageURL() != null) {
+					image.setImageResource(R.drawable.placeholder);
+					ImageLoader.loadImage(Calendar.this, image, recipe.getImageURL());
+				} else {
+					image.setImageResource(R.drawable.no_image); 
+				}
 			}
 			
 			return convertView;
