@@ -54,6 +54,11 @@ public class ImageLoader {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(new HttpGet(url));
 		Bitmap image = BitmapFactory.decodeStream(response.getEntity().getContent());
+		
+		if (image == null) {
+			throw new IOException("Empty image.");
+		}
+		
 		return Utils.getRoundedCornerBitmap(image, 8);
 	}
 }
